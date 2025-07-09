@@ -59,4 +59,28 @@ public class Cliente {
     public int getTiempoEsperaActual() {
         return tiempoEsperaActual;
 }
+    
+    public void disminuirTiempoTramite(int minutos) {
+        this.tiempoTramite -= minutos;
+        if (this.tiempoTramite < 0) {
+            this.tiempoTramite = 0;
+        }
+    }
+
+    public void incrementarTiempoEspera(int minutos) {
+        this.tiempoEsperaActual += minutos;
+    }
+
+    public boolean seFuePorTolerancia() {
+        return this.tiempoEsperaActual >= this.tolerancia;
+    }
+
+    @Override
+    public String toString() {
+        return "Tiquete: " + tiquete + ", Prioridad: " + prioridad +
+               ", Trámite: " + tiempoTramite + "min (Original: " + tiempoTramiteOriginal + "min)" +
+               ", Tolerancia: " + tolerancia + "min, Espera: " + tiempoEsperaActual + "min";
+    }
 }
+
+
