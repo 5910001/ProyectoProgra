@@ -24,9 +24,9 @@ public class Cliente {
         this.prioridad = prioridad;
         
         Random rand = new Random();
-        this.tiempoTramite = rand.nextInt(111) + 10;
+        this.tiempoTramite = rand.nextInt(10) + 10; //El tiempo de atencion que se le va a dar va a ser minimo de 10 y maximo de 20
         this.tiempoTramiteOriginal = this.tiempoTramite; // Asigna el valor inicial aquí
-        this.tolerancia = rand.nextInt(146) + 5;
+        this.tolerancia = rand.nextInt(15) + 5; //El tiempo de tolerancia que se le va a dar va a ser minimo de 5 y maximo de 20
         
         this.tiempoLlegada = System.currentTimeMillis();
         this.tiempoEsperaActual = 0;
@@ -64,6 +64,7 @@ public class Cliente {
         this.tiempoTramite -= minutos;
         if (this.tiempoTramite < 0) {
             this.tiempoTramite = 0;
+            // Disminuye el tiempo de el tramite y hace que se eviten valores negativos
         }
     }
 
