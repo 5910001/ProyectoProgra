@@ -15,7 +15,7 @@ import java.util.stream.Collectors; // Para facilitar el agrupamiento en reporte
  */
 
 public class BancoApp {
-     // Objetos globales que todas las funciones necesitarán acceder
+     // Objetos globales que todas las funciones necesitarán acceder.
     private static FilaPrioridad filaPrincipal = new FilaPrioridad(); // La única fila del banco
     private static List<CajaAtencion> cajas = new ArrayList<>(); // Lista de todas las cajas de atención
     private static List<Cliente> clientesNoAtendidos = new ArrayList<>(); // Lista de clientes que se fueron sin ser atendidos
