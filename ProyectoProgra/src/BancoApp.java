@@ -209,4 +209,18 @@ public class BancoApp {
         }
         JOptionPane.showMessageDialog(null, sb.toString(), "Estado de la Fila", JOptionPane.PLAIN_MESSAGE);
     }
+    // Muestra el estado actual de cada caja de atención
+    private static void mostrarEstadoCajas() {
+        StringBuilder sb = new StringBuilder("Estado de las Cajas:\n\n");
+        for (CajaAtencion caja : cajas) {
+            sb.append("Caja ").append(caja.getIdCaja()).append(" (Tipo: ").append(caja.getTipoCaja()).append("): ");
+            if (caja.estaLibre()) {
+                sb.append("Libre\n");
+            } else {
+                sb.append("Atendiendo a ").append(caja.getClienteActual().getTiquete())
+                  .append(" (Tiempo restante: ").append(caja.getClienteActual().getTiempoTramite()).append(" min)\n");
+            }
+        }
+        JOptionPane.showMessageDialog(null, sb.toString(), "Estado de las Cajas", JOptionPane.PLAIN_MESSAGE);
+    }
    
