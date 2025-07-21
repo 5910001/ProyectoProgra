@@ -1,21 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 import javax.swing.JOptionPane; // Para usar ventanas de diálogo
 import java.util.ArrayList;     // Para usar listas dinámicas
 import java.util.List;
 import java.util.Comparator;    // Para ordenar las listas al mostrar
 import java.util.stream.Collectors; // Para facilitar el agrupamiento en reportes
-
 /**
  *
  * @author Andrew Mena
  */
-
 public class BancoApp {
-     // Objetos globales que todas las funciones necesitarán acceder.
+     // Objetos globales que todas las funciones necesitarán acceder
     private static FilaPrioridad filaPrincipal = new FilaPrioridad(); // La única fila del banco
     private static List<CajaAtencion> cajas = new ArrayList<>(); // Lista de todas las cajas de atención
     private static List<Cliente> clientesNoAtendidos = new ArrayList<>(); // Lista de clientes que se fueron sin ser atendidos
@@ -30,12 +23,12 @@ public class BancoApp {
         }
         // Inicializar la 1 caja de Plataforma de Servicios
         cajas.add(new CajaAtencion(6, 'P')); // 'P' indica caja de Plataforma
- // Iniciar el menú principal de la aplicación
- 
-         menuPrincipal();
+
+        // Iniciar el menú principal de la aplicación
+        menuPrincipal();
     }
-    
-// Muestra el menú principal y maneja las opciones del usuario
+
+    // Muestra el menú principal y maneja las opciones del usuario
     private static void menuPrincipal() {
         String opcion;
         do {
@@ -46,6 +39,7 @@ public class BancoApp {
                           "4. Ver estado de las cajas\n" +
                           "5. Reportes y Consultas\n" +
                           "6. Salir";
+
             // Muestra el diálogo del menú y captura la opción del usuario
             opcion = JOptionPane.showInputDialog(null, menu, "Menú Principal", JOptionPane.PLAIN_MESSAGE);
 
@@ -53,7 +47,8 @@ public class BancoApp {
             if (opcion == null) {
                 opcion = "6"; // Forzar la salida si se cierra el diálogo
             }
-        // Ejecuta la acción según la opción seleccionada
+
+            // Ejecuta la acción según la opción seleccionada
             switch (opcion) {
                 case "1":
                     generarCliente();
@@ -61,7 +56,7 @@ public class BancoApp {
                 case "2":
                     avanzarSimulacion();
                     break;
-                    case "3":
+                case "3":
                     mostrarFila();
                     break;
                 case "4":
@@ -78,7 +73,8 @@ public class BancoApp {
             }
         } while (!opcion.equals("6")); // El bucle continúa hasta que el usuario elija "Salir"
     }
-     // Permite al usuario generar un nuevo cliente y asignarle una prioridad
+
+    // Permite al usuario generar un nuevo cliente y asignarle una prioridad
     private static void generarCliente() {
         String[] opcionesPrioridad = {"Adulto Mayor (A)", "Embarazada/Niño (B)", "Discapacidad (C)",
                                       "Dos o más asuntos (D)", "Plataforma de Servicios (E)",
@@ -115,9 +111,10 @@ public class BancoApp {
             totalClientesEntraron++; // Incrementa el contador de clientes que han entrado al banco
             JOptionPane.showMessageDialog(null, "Cliente generado y añadido a la fila:\n" + nuevoCliente.toString(), "Nuevo Cliente", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "La fila ha alcanzado su capacidad máxima (" + filaPrincipal.CAPACIDAD_MAXIMA + " clientes). No se pudo agregar el cliente.", "Fila Llena", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "La fila ha alcanzado su capacidad máxima (" + filaPrincipal.capacidad_max + " clientes). No se pudo agregar el cliente.", "Fila Llena", JOptionPane.WARNING_MESSAGE);
         }
     }
+
     // Avanza la simulación en un "tick" de tiempo (ej. 1 minuto)
     private static void avanzarSimulacion() {
         int minutosSimulados = 1; // Cada vez que se llama a esta función, pasa 1 minuto
@@ -192,6 +189,7 @@ public class BancoApp {
 
         JOptionPane.showMessageDialog(null, mensaje, "Avance de Simulación", JOptionPane.INFORMATION_MESSAGE);
     }
+
     // Muestra el estado actual de la fila de espera
     private static void mostrarFila() {
         if (filaPrincipal.getFilaClientes().isEmpty()) {
@@ -209,6 +207,7 @@ public class BancoApp {
         }
         JOptionPane.showMessageDialog(null, sb.toString(), "Estado de la Fila", JOptionPane.PLAIN_MESSAGE);
     }
+
     // Muestra el estado actual de cada caja de atención
     private static void mostrarEstadoCajas() {
         StringBuilder sb = new StringBuilder("Estado de las Cajas:\n\n");
@@ -223,4 +222,72 @@ public class BancoApp {
         }
         JOptionPane.showMessageDialog(null, sb.toString(), "Estado de las Cajas", JOptionPane.PLAIN_MESSAGE);
     }
-   
+
+    // Muestra varios reportes y consultas sobre la simulación
+    private static void mostrarReportes() {
+        StringBuilder sb = new StringBuilder("REPORTES DEL BANCO\n\n");
+
+        // 1. Cantidad de clientes atendidos por cada cajero.
+        sb.append("--- Clientes atendidos por cajero ---\n");
+        for (CajaAtencion caja : cajas) {
+            sb.append("Caja ").append(caja.getIdCaja()).append(" (").append(caja.getTipoCaja()).append("): ")
+              .append(caja.getCantidadClientesAtendidos()).append(" clientes\n");
+        }
+        sb.append("\n");
+
+        // 2. Promedio de tiempo de atención por cajeros.
+        // Para esto, sumamos los 'tiempoTramiteOriginal' de los clientes que cada caja atendió.
+        sb.append("--- Tiempo promedio de atención por cajero ---\n");
+        for (CajaAtencion caja : cajas) {
+            long totalTiempoCaja = 0;
+            for (Cliente c : caja.getClientesAtendidos()) {
+                totalTiempoCaja += c.getTiempoTramiteOriginal(); // Usamos el tiempo original
+            }
+            double promedio = (caja.getCantidadClientesAtendidos() > 0) ? 
+                               (double) totalTiempoCaja / caja.getCantidadClientesAtendidos() : 0;
+            
+            sb.append("Caja ").append(caja.getIdCaja()).append(" (").append(caja.getTipoCaja()).append("): ")
+              .append(String.format("%.2f", promedio)).append(" minutos/cliente\n");
+        }
+        sb.append("\n");
+
+        // 3. Total de clientes que entraron en el banco.
+        sb.append("--- Totales Generales ---\n");
+        sb.append("Total de clientes que entraron al banco: ").append(totalClientesEntraron).append("\n");
+
+        // 4. Total de clientes atendidos y sin atender en el banco.
+        int totalAtendidos = 0;
+        for (CajaAtencion caja : cajas) {
+            totalAtendidos += caja.getCantidadClientesAtendidos();
+        }
+        sb.append("Total de clientes atendidos: ").append(totalAtendidos).append("\n");
+        sb.append("Clientes actualmente en fila (sin atender): ").append(filaPrincipal.getCantidadClientes()).append("\n");
+        sb.append("Clientes que se fueron sin ser atendidos: ").append(clientesNoAtendidos.size()).append("\n\n");
+
+        // 5. Total de clientes atendidos por cada categoría (letra).
+        sb.append("--- Clientes atendidos por categoría (Prioridad) ---\n");
+        cajas.stream() // Stream de todas las cajas
+             .flatMap(caja -> caja.getClientesAtendidos().stream()) // Obtener todos los clientes atendidos de todas las cajas
+             .collect(Collectors.groupingBy(Cliente::getPrioridad, Collectors.counting())) // Agrupar por prioridad y contar
+             .entrySet().stream() // Convertir a un stream de entradas (prioridad -> conteo)
+             .sorted(Comparator.comparing(java.util.Map.Entry::getKey)) // Ordenar por la letra de prioridad (A, B, C...)
+             .forEach(entry -> sb.append("Prioridad ").append(entry.getKey()).append(": ").append(entry.getValue()).append(" clientes\n"));
+        sb.append("\n");
+
+
+        // 6. Reporte de los clientes que se fueron sin ser atendidos.
+        if (!clientesNoAtendidos.isEmpty()) {
+            sb.append("--- Clientes que se fueron sin ser atendidos ---\n");
+            for (Cliente c : clientesNoAtendidos) {
+                sb.append(c.getTiquete()).append(" (Prioridad: ").append(c.getPrioridad())
+                  .append(", Tolerancia: ").append(c.getTolerancia()).append("min")
+                  .append(", Esperó: ").append(c.getTiempoEsperaActual()).append("min)\n");
+            }
+        } else {
+            sb.append("No hay clientes que se hayan ido sin ser atendidos.\n");
+        }
+
+        // Muestra todos los reportes en un único diálogo
+        JOptionPane.showMessageDialog(null, sb.toString(), "Reportes del Banco", JOptionPane.PLAIN_MESSAGE);
+    }
+}
