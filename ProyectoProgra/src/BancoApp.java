@@ -78,4 +78,118 @@ public class BancoApp {
             }
         } while (!opcion.equals("6")); // El bucle continúa hasta que el usuario elija "Salir"
     }
+     // Permite al usuario generar un nuevo cliente y asignarle una prioridad
+    private static void generarCliente() {
+        String[] opcionesPrioridad = {"Adulto Mayor (A)", "Embarazada/Niño (B)", "Discapacidad (C)",
+                                      "Dos o más asuntos (D)", "Plataforma de Servicios (E)",
+                                      "Mujer (F)", "Hombre (G)"};
+        
+        // Muestra un menú desplegable para que el usuario elija la prioridad
+        String seleccion = (String) JOptionPane.showInputDialog(null, "Seleccione el tipo de cliente:",
+                                                                "Generar Cliente", JOptionPane.QUESTION_MESSAGE,
+                                                                null, opcionesPrioridad, opcionesPrioridad[0]);
+
+        if (seleccion == null) { // Si el usuario cancela la selección
+            return;
+        }
+
+        char prioridad;
+        // Asigna la letra de prioridad según la selección del usuario
+        switch (seleccion) {
+            case "Adulto Mayor (A)": prioridad = 'A'; break;
+            case "Embarazada/Niño (B)": prioridad = 'B'; break;
+            case "Discapacidad (C)": prioridad = 'C'; break;
+            case "Dos o más asuntos (D)": prioridad = 'D'; break;
+            case "Plataforma de Servicios (E)": prioridad = 'E'; break;
+            case "Mujer (F)": prioridad = 'F'; break;
+            case "Hombre (G)": prioridad = 'G'; break;
+            default: prioridad = 'F'; // Valor por defecto si algo sale mal
+        }
+
+        // Genera el tiquete y crea un nuevo objeto Cliente
+        String tiquete = filaPrincipal.generarTiquete(prioridad);
+        Cliente nuevoCliente = new Cliente(tiquete, prioridad);
+
+        // Intenta agregar el cliente a la fila
+        if (filaPrincipal.agregarCliente(nuevoCliente)) {
+            totalClientesEntraron++; // Incrementa el contador de clientes que han entrado al banco
+            JOptionPane.showMessageDialog(null, "Cliente generado y añadido a la fila:\n" + nuevoCliente.toString(), "Nuevo Cliente", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "La fila ha alcanzado su capacidad máxima (" + filaPrincipal.CAPACIDAD_MAXIMA + " clientes). No se pudo agregar el cliente.", "Fila Llena", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    // Avanza la simulación en un "tick" de tiempo (ej. 1 minuto)
+    private static void avanzarSimulacion() {
+        int minutosSimulados = 1; // Cada vez que se llama a esta función, pasa 1 minuto
+        simulacionTiempo += minutosSimulados; // Actualiza el tiempo total de simulación
+
+        // 1. Todos los clientes en la fila aumentan su tiempo de espera
+        filaPrincipal.avanzarTiempoEsperaEnFila(minutosSimulados);
+
+        // 2. Identificar y remover clientes que se van por exceder su tolerancia
+        List<Cliente> clientesQueSeFueron = new ArrayList<>();
+        for (Cliente c : filaPrincipal.getFilaClientes()) {
+            if (c.seFuePorTolerancia()) {
+                clientesQueSeFueron.add(c);
+            }
+        }
+        // Removerlos de la fila y añadirlos a la lista de no atendidos
+        for (Cliente c : clientesQueSeFueron) {
+            filaPrincipal.removerCliente(c);
+            clientesNoAtendidos.add(c);
+            JOptionPane.showMessageDialog(null, "Cliente " + c.getTiquete() + " se fue del banco por exceder la tolerancia de espera.", "Cliente Abandonó", JOptionPane.WARNING_MESSAGE);
+        }
+
+        // 3. Simular atención en cajas
+        int clientesAtendidosEsteTurno = 0;
+        
+        // Primero, intentar atender clientes de Plataforma con la caja de Plataforma
+        CajaAtencion cajaPlataforma = cajas.get(5); // Asumiendo que la caja 6 (índice 5) es la de Plataforma
+        if (cajaPlataforma.estaLibre()) {
+            Cliente clienteE = filaPrincipal.getSiguienteClientePlataforma();
+            if (clienteE != null) {
+                filaPrincipal.removerCliente(clienteE);
+                cajaPlataforma.atenderCliente(clienteE);
+                clientesAtendidosEsteTurno++;
+            }
+        }
+        // Avanzar el tiempo para la caja de Plataforma (si está ocupada)
+        if (!cajaPlataforma.estaLibre()) {
+            cajaPlataforma.asanSimulacionDuracion(minutosSimulados);
+        }
+        // Intentar finalizar atención en caja de Plataforma si el cliente ya terminó
+        Cliente clienteFinalizadoPlataforma = cajaPlataforma.finalizarAtencion();
+        if (clienteFinalizadoPlataforma != null) {
+            // No hacemos nada aquí con el cliente finalizado, ya está en la lista de la caja
+        }
+
+
+        // Luego, intentar atender clientes con las 5 cajas normales
+        for (int i = 0; i < 5; i++) { // Iterar sobre las primeras 5 cajas (normales)
+            CajaAtencion cajaNormal = cajas.get(i);
+            if (cajaNormal.estaLibre()) {
+                Cliente clienteAAtender = filaPrincipal.getSiguienteClienteNormal();
+                if (clienteAAtender != null) {
+                    filaPrincipal.removerCliente(clienteAAtender);
+                    cajaNormal.atenderCliente(clienteAAtender);
+                    clientesAtendidosEsteTurno++;
+                }
+            }
+            // Avanzar el tiempo para la caja normal (si está ocupada)
+            if (!cajaNormal.estaLibre()) {
+                cajaNormal.asanSimulacionDuracion(minutosSimulados);
+            }
+            // Intentar finalizar atención en caja normal si el cliente ya terminó
+            Cliente clienteFinalizadoNormal = cajaNormal.finalizarAtencion();
+            if (clienteFinalizadoNormal != null) {
+                // No hacemos nada aquí con el cliente finalizado, ya está en la lista de la caja
+            }
+        }
+
+        String mensaje = "Simulación avanzada por " + minutosSimulados + " minuto(s).\n";
+        mensaje += "Se atendieron " + clientesAtendidosEsteTurno + " clientes nuevos.\n";
+        mensaje += clientesQueSeFueron.size() + " clientes se fueron por tolerancia.";
+
+        JOptionPane.showMessageDialog(null, mensaje, "Avance de Simulación", JOptionPane.INFORMATION_MESSAGE);
+    }
    
