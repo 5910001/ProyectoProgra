@@ -192,4 +192,21 @@ public class BancoApp {
 
         JOptionPane.showMessageDialog(null, mensaje, "Avance de Simulación", JOptionPane.INFORMATION_MESSAGE);
     }
+    // Muestra el estado actual de la fila de espera
+    private static void mostrarFila() {
+        if (filaPrincipal.getFilaClientes().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La fila está vacía.", "Estado de la Fila", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Clientes en la fila (ordenados por prioridad y llegada):\n\n");
+        // Crea una copia de la lista de clientes en la fila y la ordena para mostrarla
+        List<Cliente> filaParaMostrar = new ArrayList<>(filaPrincipal.getFilaClientes());
+        filaParaMostrar.sort(Comparator.comparing(Cliente::getPrioridad) // Ordena por prioridad (A, B, C...)
+                                        .thenComparing(Cliente::getTiempoLlegada)); // Luego por tiempo de llegada (si la prioridad es la misma)
+
+        for (Cliente c : filaParaMostrar) {
+            sb.append(c.toString()).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, sb.toString(), "Estado de la Fila", JOptionPane.PLAIN_MESSAGE);
+    }
    
