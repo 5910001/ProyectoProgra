@@ -30,6 +30,52 @@ public class BancoApp {
         }
         // Inicializar la 1 caja de Plataforma de Servicios
         cajas.add(new CajaAtencion(6, 'P')); // 'P' indica caja de Plataforma
-
+ // Iniciar el menú principal de la aplicación
+ 
+         menuPrincipal();
     }
-   }
+    
+// Muestra el menú principal y maneja las opciones del usuario
+    private static void menuPrincipal() {
+        String opcion;
+        do {
+            String menu = "SIMULADOR DE BANCO - Tiempo Actual: " + simulacionTiempo + " minutos\n\n" +
+                          "1. Generar nuevo cliente (Tomar tiquete)\n" +
+                          "2. Avanzar simulación (Atender clientes)\n" +
+                          "3. Ver estado de la fila\n" +
+                          "4. Ver estado de las cajas\n" +
+                          "5. Reportes y Consultas\n" +
+                          "6. Salir";
+            // Muestra el diálogo del menú y captura la opción del usuario
+            opcion = JOptionPane.showInputDialog(null, menu, "Menú Principal", JOptionPane.PLAIN_MESSAGE);
+
+            // Manejar si el usuario cierra el diálogo o presiona cancelar
+            if (opcion == null) {
+                opcion = "6"; // Forzar la salida si se cierra el diálogo
+            }
+        // Ejecuta la acción según la opción seleccionada
+            switch (opcion) {
+                case "1":
+                    generarCliente();
+                    break;
+                case "2":
+                    avanzarSimulacion();
+                    break;
+                    case "3":
+                    mostrarFila();
+                    break;
+                case "4":
+                    mostrarEstadoCajas();
+                    break;
+                case "5":
+                    mostrarReportes();
+                    break;
+                case "6":
+                    JOptionPane.showMessageDialog(null, "Saliendo del simulador. ¡Hasta pronto!");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Opción inválida. Intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } while (!opcion.equals("6")); // El bucle continúa hasta que el usuario elija "Salir"
+    }
+   
