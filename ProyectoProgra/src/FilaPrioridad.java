@@ -15,7 +15,7 @@ import java.util.Comparator;
 public class FilaPrioridad {
      private List<Cliente> filaClientes; // Aquí se guardan todos los clientes de la fila
     private int consecuTique; // Cuenta el numero de ticketes
-    final int capacidad_max = 25; // el maximo de la fila es de 25 clientes
+    final int CAPACIDAD_MAXIMA = 25; // el maximo de la fila es de 25 clientes
 
     // Constructor de la FilaPrioridad
     public FilaPrioridad() {
@@ -25,7 +25,7 @@ public class FilaPrioridad {
 
     // Agrega un nuevo cliente a la fila
     public boolean agregarCliente(Cliente cliente) {
-        if (filaClientes.size() < capacidad_max) { // Verifica si hay espacio
+        if (filaClientes.size() < CAPACIDAD_MAXIMA) { // Verifica si hay espacio
             filaClientes.add(cliente); // Añadir cliemte
             return true; // Se agrega el cliente exitosamente
         } else {
