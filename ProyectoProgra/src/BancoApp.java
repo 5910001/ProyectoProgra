@@ -111,7 +111,7 @@ public class BancoApp {
             totalClientesEntraron++; // Incrementa el contador de clientes que han entrado al banco
             JOptionPane.showMessageDialog(null, "Cliente generado y añadido a la fila:\n" + nuevoCliente.toString(), "Nuevo Cliente", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "La fila ha alcanzado su capacidad máxima (" + filaPrincipal.capacidad_max + " clientes). No se pudo agregar el cliente.", "Fila Llena", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "La fila ha alcanzado su capacidad máxima (" + filaPrincipal.CAPACIDAD_MAXIMA+ " clientes). No se pudo agregar el cliente.", "Fila Llena", JOptionPane.WARNING_MESSAGE);
         }
     }
 
